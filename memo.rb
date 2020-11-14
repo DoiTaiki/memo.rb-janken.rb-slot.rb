@@ -16,24 +16,17 @@ if memo_type == "1"
   
   puts "改行はエンターキー、終了する場合はcontrol + Dを入力して下さい"
   
-  inputs = $stdin.readlines
-  len = inputs.length
-  i = 0
+  inputs = $stdin.read.split("\n")
 
-  while i < len
-      inputs[i] = inputs[i].chomp
-      i += 1
-  end
-  
   CSV.open("#{filename}.csv", "w") do |csv|
-      csv << inputs
+    csv << inputs
   end
   
-  puts "ファイルの内容が以下のようになりました"
+  puts "ファイルの内容が以下のようになりました。一行毎に[]でまとめられています。"
   
   created_data_list = CSV.read("#{filename}.csv")
   
-  puts created_data_list
+  p created_data_list
   
 elsif memo_type == "2"
   
@@ -41,11 +34,11 @@ elsif memo_type == "2"
   
   edit_filename = gets.chomp
   
-  data_list = CSV.read("#{edit_filename}.csv")
+  data_lists = CSV.read("#{edit_filename}.csv")
   
-  puts "編集するファイルの内容はこちらです"
+  puts "編集するファイルの内容はこちらです。一行毎に[]でまとめられています。"
   
-  puts data_list
+  p data_lists
   
   puts "編集方法を選択して下さい"
   
@@ -55,33 +48,32 @@ elsif memo_type == "2"
   
     if edit_mode == "3"
       
-      data_list_array = data_list.split(',')
+      puts "編集する行番号を入力して下さい(左から0, 1, 2,...)"
+      row_number = gets.chomp.to_i
       
-      puts "編集する要素番号を入力して下さい(上から0, 1, 2,...)"
+      puts "変更されるのは次の行です。"
+      p data_lists[row_number]
+
+      puts "行内で変更する要素を入力して下さい（左から0, 1, 2,...）"
+      column_number = gets.chomp.to_i
       
-      culumn_number = gets.chomp.to_i
+      puts "変更されるのは次の要素です。"
+      puts data_lists[row_number][column_number]
       
-      puts "変更するメモ内容を入力して下さい"
+      puts "変更内容を入力して下さい"
+      data_lists[row_number][column_number] = gets.chomp.to_s     #ここまでだけだと保存はされていない
       
-      data_list_array[culumn_number] = gets.chomp
-      
-      changed_len = data_list_array.length
-      k = 0
-    
-      while k < changed_len
-          data_list_array[k] = data_list_array[k].chomp
-          k += 1
-      end
-      
+      i = 0                                                       #ここで上書き保存
+      len = data_lists.length
       CSV.open("#{edit_filename}.csv", "w") do |csv|
-          csv << data_list_array
+        while i < len do
+          csv << data_lists[i]
+          i += 1
+        end
       end
-      
-      puts "ファイルの内容が以下のように変更されました"
-      
-      edited_data_list = CSV.read("#{edit_filename}.csv")
-          
-      puts edited_data_list
+
+      puts "ファイルは次のように変更されました。"
+      p data_lists
       
     elsif edit_mode == "4"
       
@@ -89,15 +81,8 @@ elsif memo_type == "2"
       
       puts "改行はエンターキー、終了する場合はcontrol + Dを入力して下さい"
       
-      add_inputs = $stdin.readlines
-      add_len = add_inputs.length
-      j = 0
-      
-      while j < add_len
-        add_inputs[j] = add_inputs[j].chomp
-        j += 1
-      end
-      
+      add_inputs = $stdin.read.split("\n")
+
       CSV.open("#{edit_filename}.csv", "a") do |csv|
         csv << add_inputs
       end
@@ -106,7 +91,7 @@ elsif memo_type == "2"
       
       added_data_list = CSV.read("#{edit_filename}.csv")
       
-      puts added_data_list
+      p added_data_list
       
     else
       
